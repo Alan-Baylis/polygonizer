@@ -1,4 +1,3 @@
-using UnityEngine;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -148,31 +147,13 @@ namespace PolygonizerLib
 							dir = Direction.NW;
 						break;
 				}
-				try{
-					current = gotoDirection(center, dir);
-					if (Get(current) == value) break;
-				} catch (ArgumentOutOfRangeException ae){
-					Debug.Log(ae.StackTrace);
-				}
+				current = gotoDirection(center, dir);
+				if (Get(current) == value) break;
 				dir = (Direction) (((int) dir + 1) % 8);
 				count++;
 			}
 
 			return count != 9 ? current : new IntPoint(-1, -1);
-		}
-
-		public static BitMatrix fromTexture(Texture2D bMap)
-		{
-			if(bMap == null) throw new ArgumentNullException();
-			int w = bMap.width;
-			int h = bMap.height;
-			BitMatrix b = new BitMatrix(w, h);
-			for (int y = 0; y < h; y++)
-				for (int x = 0; x < w; x++) {
-					Color c = bMap.GetPixel(x, y);
-					b.bits[y * w + x] = (c.a >= 0.5f);
-				}
-			return b;
 		}
 //
 //		public static Texture2D ToMonoBitmap(BitMatrix bMatrix)

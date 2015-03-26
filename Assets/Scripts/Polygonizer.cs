@@ -1,8 +1,6 @@
-using UnityEngine;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using ClipperLib;
 
 namespace PolygonizerLib
@@ -10,32 +8,32 @@ namespace PolygonizerLib
 	using Path = List<IntPoint>;
 	using Paths = List<List<IntPoint>>;
 
+	struct Rect{
+		public int xMin;
+		public int xMax;
+		public int yMin;
+		public int yMax;
+		public int width{ get{return xMax - xMin + 1; }}
+		public int height{ get{return yMax - yMin + 1; }}
+		public Rect(int xMin, int yMin, int xMax, int yMax){
+			this.xMin = xMin; this.xMax = xMax;
+			this.yMin = yMin; this.yMax = yMax;
+		}
+	}
+
 	/// <summary>
 	/// A Polygonizer that produces polygons compatible with ClipperLib.
 	/// </summary>
 	public class Polygonizer
 	{
-
-		/// <summary>
-		/// Returns a list of polygons parsed from a bitmap.
-		/// </summary>
-		/// <returns>The texture.</returns>
-		/// <param name="t">T.</param>
-		public static Paths FromTexture(Texture2D t){
-			//UnityEngine.Debug.Log("Texture spec: "+t.width+", "+t.height);
-			// texture -> bitmatrix -> a list of polygons
-			BitMatrix bm = BitMatrix.fromTexture(t);
-			return FromBitMatrix(bm);
-		}
-
 		private static BitMatrix DrawPoints(Path p, Rect r){
 			// Current polygon must have at least one point
 			if (p.Count == 0)
 				return new BitMatrix(1, 1);
-			BitMatrix bm = new BitMatrix((int)r.width, (int)r.height);
+			BitMatrix bm = new BitMatrix(r.width, r.height);
 
 			for(int i=0; i<p.Count; i++){
-				bm.Set(p[i].X - (int)r.xMin, p[i].Y - (int)r.yMin, true);
+				bm.Set(p[i].X - r.xMin, p[i].Y - r.yMin, true);
 			}
 			return bm;
 		}
@@ -51,7 +49,7 @@ namespace PolygonizerLib
 				if (p[i].Y > y2) y2 = p[i].Y;
 			}
 
-			return new Rect(x1, y1, x2 - x1 + 1, y2 - y1 + 1);
+			return new Rect(x1, y1, x2, y2);
 		}
 		
 		/// <summary>
@@ -60,7 +58,7 @@ namespace PolygonizerLib
 		/// <param name='bm'>
 		/// The BitMatrix to convert from.
 		/// </param>
-		private static Paths FromBitMatrix(BitMatrix bm){
+		public static Paths Polygonize(BitMatrix bm){
 			#region pixels grouping
 			// group pixels into separate areas, keep in mind that a polygon only stores points here
 			Paths areas = new Paths();
@@ -269,7 +267,7 @@ namespace PolygonizerLib
 		}
 
 		private static float distToSegment(IntPoint p, IntPoint v, IntPoint w) { 
-			return Mathf.Sqrt(distToSegmentSqr(p, v, w));
+			return (float)Math.Sqrt(distToSegmentSqr(p, v, w));
 		}
 
 		private static float distSqr(IntPoint v, IntPoint w){

@@ -16,9 +16,7 @@ namespace Demo {
 			if(Input.GetMouseButtonDown(0)){
 				Vector3 mouseP = Input.mousePosition;
 				mouseP.z = -transform.position.z;
-				Debug.Log("clicked at "+mouseP);
-				Debug.Log("position at "+camera.ScreenToWorldPoint(mouseP));
-				controller.Clip(camera.ScreenToWorldPoint(mouseP), 10f);
+				controller.Clip(camera.ScreenToWorldPoint(mouseP), 30f);
 			}
 		}
 	}

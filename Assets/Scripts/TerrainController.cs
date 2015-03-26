@@ -21,7 +21,15 @@ namespace Demo {
 		private PolygonCollider2D polygonCollider;
 
 		public void Awake() {
-			this.polygons = Polygonizer.FromTexture(texture);
+			int w = texture.width;
+			int h = texture.height;
+			BitMatrix bm = new BitMatrix(w, h);
+			for (int y = 0; y < h; y++){
+				for (int x = 0; x < w; x++) {
+					bm.Set(x, y, (texture.GetPixel(x, y).a >= 0.5f));
+				}
+			}
+			this.polygons = Polygonizer.Polygonize(bm);
 			this.polygonCollider = GetComponent<PolygonCollider2D>();
 
 			foreach(List<IntPoint> li in this.polygons)
