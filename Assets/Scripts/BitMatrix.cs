@@ -7,7 +7,6 @@ using ClipperLib;
 
 namespace PolygonizerLib
 {
-	// TODO change BitArray to bool[]
 	using Path = List<IntPoint>;
 	using Paths = List<List<IntPoint>>;
 

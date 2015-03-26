@@ -28,7 +28,6 @@ namespace Demo {
 				for(int i=0; i< li.Count; i++)
 					li[i] = new IntPoint(li[i].X * MAP_SCALE_INV, li[i].Y * MAP_SCALE_INV);
 
-			//Clip(new Vector2(100f, 265f), 30f);		// test clipper
 			dirty = true;
 		}
 
@@ -43,7 +42,7 @@ namespace Demo {
 			}
 		}
 
-		void Clip(Vector2 center, float radius){
+		public void Clip(Vector2 center, float radius){
 			center.x *= MAP_SCALE_INV;
 			center.y *= MAP_SCALE_INV;
 			radius *= MAP_SCALE_INV;
@@ -57,6 +56,7 @@ namespace Demo {
 			c.AddPaths(this.polygons, PolyType.ptSubject, true);
 			c.AddPath(clip, PolyType.ptClip, true);
 			c.Execute(ClipType.ctDifference, polygons);
+			dirty = true;
 		}
 
 		/// <summary>
