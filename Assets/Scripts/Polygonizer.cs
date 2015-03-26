@@ -230,7 +230,7 @@ namespace PolygonizerLib
 				currP = nextP;
 			} while (nextP != startP);
 
-			Optimize(polygon);
+			RDP(polygon);
 			return polygon;
 		}
 
@@ -238,8 +238,42 @@ namespace PolygonizerLib
 		/// Optimize the specified polygon using Ramer–Douglas–Peucker algorithm.
 		/// </summary>
 		/// <param name="polygon">Polygon.</param>
-		private static void Optimize(Path polygon, float threshold = 1f){
-			
+		private static void RDP(Path polygon, float epsilon = 5f, int begin=0, int end=-1){
+			if(end == -1) end = polygon.Count;
+			if(end - begin <= 2) return;
+			float d, dmax = 0; 
+			int index = 0;
+			for(int i=begin+1; i<end-1; i++){
+				d = distToSegmentSqr(polygon[i], polygon[begin], polygon[end - 1]);
+				if(d > dmax){
+					dmax = d;
+					index = i;
+				}
+			}
+			if ( dmax > epsilon ) {
+				RDP(polygon, epsilon, index, end);
+				RDP(polygon, epsilon, begin, index);
+			} else {
+				// remove all points in between
+				polygon.RemoveRange(begin + 1, end-begin-2);
+			}
+		}
+
+		private static float distToSegmentSqr(IntPoint p, IntPoint v, IntPoint w) {
+			float l2 = distSqr(v, w);
+			if (l2 == 0) return distSqr(p, v);
+			float t = ((p.X - v.X) * (w.X - v.X) + (p.Y - v.Y) * (w.Y - v.Y)) / l2;
+			if (t < 0) return distSqr(p, v);
+			if (t > 1) return distSqr(p, w);
+			return distSqr(p, new IntPoint(v.X + t * (w.X - v.X), v.Y + t * (w.Y - v.Y)));
+		}
+
+		private static float distToSegment(IntPoint p, IntPoint v, IntPoint w) { 
+			return Mathf.Sqrt(distToSegmentSqr(p, v, w));
+		}
+
+		private static float distSqr(IntPoint v, IntPoint w){
+			return (float)(Math.Pow(v.X - w.X, 2) + Math.Pow(v.Y - w.Y, 2));
 		}
 	}
 }
